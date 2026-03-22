@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gemini Watermark Remover — Free & Private</title>
+  <meta name="description" content="Free online tool to remove the visible Gemini watermark (4-point star) from AI-generated images. Runs entirely in your browser — no upload, no server, fully private.">
+  <meta name="keywords" content="gemini watermark remover, remove gemini watermark, AI image watermark, google gemini watermark, remove star watermark">
+  <link rel="canonical" href="https://your-project-name.vercel.app/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Gemini Watermark Remover — Free & Private">
+  <meta property="og:description" content="Free browser-based tool to remove the visible Gemini watermark from AI-generated images. No upload needed — runs 100% client-side.">
+  <meta property="og:url" content="https://your-project-name.vercel.app/">
+  <meta property="og:image" content="https://your-project-name.vercel.app/assets/seo-image.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Gemini Watermark Remover">
+  <meta name="twitter:description" content="Remove the Gemini star watermark from AI images — free, private, runs in your browser.">
+  <meta name="twitter:image" content="https://your-project-name.vercel.app/assets/seo-image.jpg">
+  <meta name="robots" content="index, follow">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Gemini Watermark Remover","url":"https://your-project-name.vercel.app/","description":"Free online tool to remove the visible Gemini watermark from AI-generated images.","applicationCategory":"MultimediaApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#fafaf9;--surface:#fff;--s2:#f5f4f2;--s3:#edecea;
+      --border:#e4e2df;--text:#18181b;--t2:#52525b;--t3:#a1a1aa;
+      --accent:#e84d1c;--a2:rgba(232,77,28,.08);--a3:rgba(232,77,28,.16);
+      --green:#16a34a;--red:#dc2626;
+      --mono:'JetBrains Mono',monospace;--sans:'Plus Jakarta Sans',sans-serif;
+      --r:12px;--rl:18px;
+      --sh:0 1px 2px rgba(0,0,0,.05);
+      --sh2:0 1px 3px rgba(0,0,0,.07),0 8px 24px rgba(0,0,0,.04);
+      --sh3:0 4px 6px rgba(0,0,0,.05),0 20px 48px rgba(0,0,0,.07);
+    }
+    :root[data-theme="dark"]{
+      --bg:#09090b;--surface:#111113;--s2:#18181b;--s3:#27272a;
+      --border:#27272a;--text:#fafafa;--t2:#a1a1aa;--t3:#52525b;
+      --accent:#f97316;--a2:rgba(249,115,22,.08);--a3:rgba(249,115,22,.18);
+      --green:#4ade80;--red:#f87171;
+      --sh:0 1px 2px rgba(0,0,0,.3);
+      --sh2:0 1px 3px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.2);
+      --sh3:0 4px 6px rgba(0,0,0,.3),0 20px 48px rgba(0,0,0,.3);
+    }
+    @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+      --bg:#09090b;--surface:#111113;--s2:#18181b;--s3:#27272a;
+      --border:#27272a;--text:#fafafa;--t2:#a1a1aa;--t3:#52525b;
+      --accent:#f97316;--a2:rgba(249,115,22,.08);--a3:rgba(249,115,22,.18);
+      --green:#4ade80;--red:#f87171;
+      --sh:0 1px 2px rgba(0,0,0,.3);
+      --sh2:0 1px 3px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.2);
+      --sh3:0 4px 6px rgba(0,0,0,.3),0 20px 48px rgba(0,0,0,.3);
+    }}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:50;background:rgba(250,250,249,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    :root[data-theme="dark"] nav{background:rgba(9,9,11,.88)}
+    @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) nav{background:rgba(9,9,11,.88)}}
+    .nav-inner{max-width:1100px;margin:0 auto;height:56px;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+    .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text)}
+    .logo-icon{width:30px;height:30px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:800;flex-shrink:0}
+    .logo-name{font-weight:700;font-size:.9rem;letter-spacing:-.01em}
+    .nav-right{display:flex;align-items:center;gap:.6rem}
+    .nav-link{font-size:.82rem;color:var(--t2);text-decoration:none;padding:.3rem .6rem;border-radius:6px;transition:color .15s,background .15s}
+    .nav-link:hover{color:var(--text);background:var(--s2)}
+    .theme-toggle{display:flex;align-items:center;gap:2px;padding:3px;border-radius:9px;background:var(--s2);border:1px solid var(--border)}
+    .theme-toggle button{display:flex;align-items:center;justify-content:center;width:28px;height:26px;border:none;border-radius:6px;background:transparent;color:var(--t3);cursor:pointer;transition:all .15s}
+    .theme-toggle button:hover{color:var(--text)}
+    .theme-toggle button.active{background:var(--surface);color:var(--accent);box-shadow:var(--sh)}
+    .theme-toggle button svg{width:13px;height:13px}
+
+    /* HERO */
+    .hero{max-width:1100px;margin:0 auto;padding:4rem 1.5rem 0;text-align:center}
+    .eyebrow{display:inline-flex;align-items:center;gap:.45rem;padding:.3rem .9rem;border-radius:99px;background:var(--a2);border:1px solid var(--a3);font-family:var(--mono);font-size:.7rem;color:var(--accent);margin-bottom:1.25rem;letter-spacing:.02em}
+    .eyebrow svg{width:10px;height:10px}
+    .hero-title{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;letter-spacing:-.04em;line-height:1.08;margin-bottom:1rem}
+    .hero-title em{font-style:normal;color:var(--accent)}
+    .hero-sub{font-size:1rem;color:var(--t2);max-width:440px;margin:0 auto 2rem;line-height:1.65}
+    .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:.45rem;margin-bottom:3rem}
+    .chip{display:inline-flex;align-items:center;gap:.35rem;padding:.32rem .8rem;border-radius:99px;background:var(--surface);border:1px solid var(--border);font-size:.76rem;color:var(--t2);box-shadow:var(--sh)}
+    .chip svg{width:11px;height:11px;color:var(--accent);flex-shrink:0}
+
+    /* TOOL WRAP */
+    .wrap{max-width:1100px;margin:0 auto;padding:0 1.5rem 5rem}
+
+    /* UPLOAD */
+    .upload-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh2);margin-bottom:1rem}
+    .dropzone{padding:3rem 2rem;text-align:center;cursor:pointer;position:relative;border:2px dashed transparent;border-radius:var(--rl);transition:background .2s,border-color .2s}
+    .dropzone:hover,.dropzone.dragover{background:var(--a2);border-color:var(--accent)}
+    .dz-icon{width:52px;height:52px;border-radius:14px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem;transition:background .2s,transform .2s}
+    .dropzone:hover .dz-icon{background:var(--a3);transform:translateY(-2px)}
+    .dz-icon svg{width:22px;height:22px;color:var(--t2)}
+    .dropzone:hover .dz-icon svg{color:var(--accent)}
+    .dz-title{font-size:1rem;font-weight:700;margin-bottom:.3rem}
+    .dz-hint{font-size:.78rem;color:var(--t2);font-family:var(--mono);margin-bottom:1rem}
+    .dz-sep{display:flex;align-items:center;gap:.75rem;max-width:180px;margin:.75rem auto;font-size:.72rem;color:var(--t3)}
+    .dz-sep::before,.dz-sep::after{content:'';flex:1;height:1px;background:var(--border)}
+    .dz-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.25rem;border-radius:8px;background:var(--accent);color:#fff;font-family:var(--sans);font-size:.84rem;font-weight:600;border:none;cursor:pointer;box-shadow:0 2px 8px var(--a3);transition:filter .15s}
+    .dz-btn:hover{filter:brightness(1.1)}
+    .dz-btn svg{width:14px;height:14px}
+    .dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+    .stats-bar{display:flex;align-items:center;flex-wrap:wrap;gap:1.25rem;padding:.7rem 1.25rem;border-top:1px solid var(--border)}
+    .stat{display:flex;align-items:center;gap:.38rem;font-size:.72rem;color:var(--t3);font-family:var(--mono)}
+    .stat svg{width:11px;height:11px;color:var(--accent)}
+
+    /* PROCESSING */
+    .processor{display:none;margin-bottom:1rem}
+    .processor.active{display:block}
+    .status-bar{display:flex;align-items:center;gap:.75rem;padding:.9rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.6rem;font-family:var(--mono);font-size:.8rem;box-shadow:var(--sh)}
+    .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .dot.run{background:var(--accent);animation:pulse 1s infinite}
+    .dot.ok{background:var(--green)}
+    .dot.err{background:var(--red)}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .s-txt{color:var(--t2)}.s-txt.ok{color:var(--green)}.s-txt.err{color:var(--red)}
+    .batch-list{list-style:none;display:grid;gap:.35rem}
+    .batch-item{display:flex;align-items:center;gap:.7rem;padding:.65rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);font-size:.8rem;box-shadow:var(--sh)}
+    .batch-item .bi-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .batch-item .bi-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono);font-size:.75rem}
+    .batch-item .bi-size{color:var(--t3);font-size:.7rem;font-family:var(--mono);flex-shrink:0}
+    .batch-item .bi-dl{background:none;border:1px solid var(--border);color:var(--accent);cursor:pointer;font-family:var(--mono);font-size:.7rem;padding:.2rem .55rem;border-radius:5px;transition:all .15s;flex-shrink:0}
+    .batch-item .bi-dl:hover{border-color:var(--accent);background:var(--a2)}
+
+    /* RESULT */
+    .result{display:none;margin-bottom:1rem}
+    .result.active{display:block}
+    .result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh3)}
+    .result-hd{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.1rem;border-bottom:1px solid var(--border);gap:1rem}
+    .result-badge{display:flex;align-items:center;gap:.4rem;font-size:.8rem;font-weight:600;color:var(--green)}
+    .result-badge svg{width:15px;height:15px}
+    .comparison{position:relative;width:100%;cursor:col-resize;user-select:none;-webkit-user-select:none}
+    .comparison img{display:block;width:100%;height:auto;pointer-events:none}
+    .comparison .aw{position:absolute;top:0;left:0;width:50%;height:100%;overflow:hidden}
+    .comparison .aw img{position:absolute;top:0;left:0;height:100%;width:auto;min-width:100%;object-fit:cover;pointer-events:none}
+    .sl{position:absolute;top:0;left:50%;width:2px;height:100%;background:#fff;transform:translateX(-50%);pointer-events:none;z-index:2;box-shadow:0 0 8px rgba(0,0,0,.3)}
+    .sh{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none;box-shadow:0 2px 16px rgba(0,0,0,.25)}
+    .sh svg{width:17px;height:17px;color:#333}
+    .cl{position:absolute;top:.65rem;left:0;right:0;display:flex;justify-content:space-between;padding:0 .7rem;z-index:4;pointer-events:none}
+    .cl span{padding:.18rem .55rem;border-radius:5px;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);font-family:var(--mono);font-size:.65rem;color:#fff}
+    .result-actions{display:flex;gap:.7rem;padding:.9rem 1.1rem;border-top:1px solid var(--border);flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:.45rem;padding:.68rem 1.35rem;border-radius:var(--r);font-family:var(--sans);font-size:.855rem;font-weight:600;border:none;cursor:pointer;transition:all .15s;text-decoration:none}
+    .btn svg{width:14px;height:14px;flex-shrink:0}
+    .btn-p{background:var(--accent);color:#fff;flex:1;box-shadow:0 2px 10px var(--a3)}
+    .btn-p:hover{filter:brightness(1.08);transform:translateY(-1px)}
+    .btn-g{background:var(--s2);border:1px solid var(--border);color:var(--t2)}
+    .btn-g:hover{color:var(--text);border-color:var(--t3)}
+
+    /* GRID */
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:1.25rem;margin-top:2rem}
+
+    /* DEMO */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh2);margin-bottom:1rem}
+    .card:last-child{margin-bottom:0}
+    .card-hd{padding:.85rem 1.1rem;border-bottom:1px solid var(--border)}
+    .lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);display:flex;align-items:center;gap:.4rem}
+    .lbl svg{width:12px;height:12px;color:var(--accent)}
+    .demo-comp{position:relative;width:100%;cursor:col-resize;user-select:none;-webkit-user-select:none}
+    .demo-comp>img{display:block;width:100%;height:auto;pointer-events:none}
+    .demo-comp .aw{position:absolute;top:0;left:0;width:50%;height:100%;overflow:hidden}
+    .demo-comp .aw img{display:block;position:absolute;top:0;left:0;height:100%;pointer-events:none}
+
+    /* HOW / ABOUT */
+    .side{display:flex;flex-direction:column;gap:1.25rem}
+    .how-list{list-style:none}
+    .how-item{display:flex;align-items:flex-start;gap:.7rem;padding:.8rem 1.1rem;border-bottom:1px solid var(--border);transition:background .15s}
+    .how-item:last-child{border-bottom:none}
+    .how-item:hover{background:var(--s2)}
+    .how-n{width:22px;height:22px;border-radius:6px;background:var(--a2);border:1px solid var(--a3);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.62rem;color:var(--accent);flex-shrink:0;margin-top:1px}
+    .how-t h4{font-size:.8rem;font-weight:600;margin-bottom:.12rem}
+    .how-t p{font-size:.74rem;color:var(--t2);line-height:1.5}
+    .about-body{padding:.85rem 1.1rem}
+    .about-body p{font-size:.8rem;color:var(--t2);line-height:1.7;margin-bottom:.65rem}
+    .about-body p:last-child{margin-bottom:0}
+    .about-body a{color:var(--accent);text-decoration:none}
+    .about-body a:hover{text-decoration:underline}
+
+    /* FAQ */
+    details{border-bottom:1px solid var(--border);transition:background .15s}
+    details:last-child{border-bottom:none}
+    details[open]{background:var(--s2)}
+    summary{padding:.82rem 1.1rem;cursor:pointer;font-weight:600;font-size:.82rem;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:.75rem}
+    summary::after{content:'+';font-family:var(--mono);color:var(--t3);font-size:1rem;flex-shrink:0}
+    details[open] summary::after{content:'−';color:var(--accent)}
+    summary::-webkit-details-marker{display:none}
+    details p{padding:0 1.1rem .85rem;font-size:.79rem;color:var(--t2);line-height:1.7}
+    details code{font-family:var(--mono);font-size:.74rem;background:var(--s3);padding:.15rem .38rem;border-radius:4px}
+
+    /* FOOTER */
+    footer{max-width:1100px;margin:0 auto;padding:1.5rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
+    .fl{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;color:var(--t3)}
+    .fl a{color:var(--t3);text-decoration:none;transition:color .15s}
+    .fl a:hover{color:var(--accent)}
+    .fl .sep{color:var(--border)}
+    .fr{display:flex;align-items:center;gap:.35rem;font-family:var(--mono);font-size:.7rem;color:var(--t3)}
+    .fr a{display:inline-flex;align-items:center;gap:.3rem;color:var(--accent);text-decoration:none;font-weight:500}
+    .fr a:hover{text-decoration:underline}
+    .fr svg{width:12px;height:12px}
+
+    #processingCanvas{display:none}
+
+    @media(max-width:860px){.grid{grid-template-columns:1fr}}
+    @media(max-width:600px){
+      .nav-link{display:none}
+      .hero{padding:2.5rem 1rem 0}
+      .wrap{padding:0 1rem 4rem}
+      .hero-title{font-size:2rem}
+      footer{padding:1.25rem 1rem}
+    }
+  </style>
+</head>
+<body>
+<noscript><p style="text-align:center;padding:2rem;font-family:monospace;color:#666">This tool requires JavaScript.</p></noscript>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <div class="logo-icon">✦</div>
+      <span class="logo-name">Watermark Remover</span>
+    </a>
+    <div class="nav-right">
+      <div class="theme-toggle" id="themeToggle" aria-label="theme">
+        <button data-theme="light" title="Light"><i data-lucide="sun"></i></button>
+        <button data-theme="system" title="System" class="active"><i data-lucide="monitor"></i></button>
+        <button data-theme="dark" title="Dark"><i data-lucide="moon"></i></button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="eyebrow"><i data-lucide="sparkles"></i>free · browser-only · zero uploads</div>
+  <h1 class="hero-title">Remove the Gemini<br><em>star watermark</em></h1>
+  <p class="hero-sub">Mathematically recovers original pixels using reverse alpha blending. Your images never leave your device.</p>
+  <div class="chips">
+    <span class="chip"><i data-lucide="shield-check"></i>100% client-side</span>
+    <span class="chip"><i data-lucide="zap"></i>Instant</span>
+    <span class="chip"><i data-lucide="files"></i>Batch support</span>
+    <span class="chip"><i data-lucide="image"></i>Lossless PNG</span>
+    <span class="chip"><i data-lucide="eye-off"></i>No data stored</span>
+  </div>
+</div>
+
+<!-- TOOL -->
+<div class="wrap">
+
+  <!-- Upload -->
+  <div class="upload-card">
+    <div class="dropzone" id="dropzone">
+      <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" multiple>
+      <div class="dz-icon"><i data-lucide="upload-cloud"></i></div>
+      <div class="dz-title">Drop images here</div>
+      <div class="dz-hint">PNG · JPG · WEBP · multiple files</div>
+      <div class="dz-sep">or</div>
+      <button class="dz-btn" type="button" onclick="document.getElementById('fileInput').click();event.stopPropagation()">
+        <i data-lucide="folder-open"></i>Browse files
+      </button>
+    </div>
+    <div class="stats-bar">
+      <span class="stat"><i data-lucide="lock"></i>Nothing leaves your device</span>
+      <span class="stat"><i data-lucide="layers"></i>Multiple files at once</span>
+      <span class="stat"><i data-lucide="download"></i>Lossless PNG output</span>
+    </div>
+  </div>
+
+  <!-- Processing -->
+  <div class="processor" id="processor">
+    <div class="status-bar">
+      <div class="dot run" id="statusDot"></div>
+      <span class="s-txt" id="statusText">processing...</span>
+    </div>
+    <ul class="batch-list" id="batchList"></ul>
+  </div>
+
+  <!-- Result -->
+  <div class="result" id="result">
+    <div class="result-card">
+      <div class="result-hd">
+        <div class="result-badge"><i data-lucide="check-circle-2"></i>Watermark removed</div>
+        <div id="resultActions2" style="display:flex;gap:.5rem"></div>
+      </div>
+      <div class="comparison" id="comp">
+        <img id="beforeImg" alt="original with Gemini watermark" draggable="false">
+        <div class="aw" id="afterWrap">
+          <img id="afterImg" alt="cleaned image" draggable="false">
+        </div>
+        <div class="sl" id="sliderLine"></div>
+        <div class="sh" id="sliderHandle"><i data-lucide="move-horizontal"></i></div>
+        <div class="cl">
+          <span>original</span><span>cleaned</span>
+        </div>
+      </div>
+      <div class="result-actions" id="actions"></div>
+    </div>
+  </div>
+
+  <!-- Two-column grid -->
+  <div class="grid">
+
+    <!-- LEFT col -->
+    <div>
+      <!-- Demo -->
+      <div class="card">
+        <div class="card-hd"><div class="lbl"><i data-lucide="eye"></i>Live example — drag the slider</div></div>
+        <div class="demo-comp" id="demoComp">
+          <img src="assets/before.png" alt="AI-generated image with Gemini star watermark" draggable="false">
+          <div class="aw" id="demoAfterWrap">
+            <img src="assets/after.png" alt="image after Gemini watermark removal" draggable="false">
+          </div>
+          <div class="sl" id="demoSliderLine"></div>
+          <div class="sh" id="demoSliderHandle"><i data-lucide="move-horizontal"></i></div>
+          <div class="cl"><span>before</span><span>after</span></div>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="card" id="faq">
+        <div class="card-hd"><div class="lbl"><i data-lucide="help-circle"></i>Frequently asked questions</div></div>
+        <details>
+          <summary>What is the Gemini watermark?</summary>
+          <p>Google Gemini adds a small semi-transparent 4-point star watermark to AI-generated images. It appears in the bottom-right corner. The watermark is 48×48 px on smaller images and 96×96 px on images larger than 1024×1024.</p>
+        </details>
+        <details>
+          <summary>Is this tool safe to use?</summary>
+          <p>Yes. This tool runs entirely in your browser using the Canvas API. Your images are never uploaded to any server — all processing happens locally. You can verify this in your browser's network tab.</p>
+        </details>
+        <details>
+          <summary>How does the removal work?</summary>
+          <p>The tool uses reverse alpha blending to mathematically recover original pixel values. The Gemini watermark is a semi-transparent white overlay with a known alpha pattern. We reverse: <code>original = (watermarked − alpha × 255) / (1 − alpha)</code> per channel.</p>
+        </details>
+        <details>
+          <summary>What formats are supported?</summary>
+          <p>PNG, JPEG, and WebP. Output is always lossless PNG to prevent compression artifacts.</p>
+        </details>
+        <details>
+          <summary>Can I process multiple images?</summary>
+          <p>Yes — drag and drop or select multiple files at once. Each is processed in sequence with individual download buttons.</p>
+        </details>
+        <details>
+          <summary>Does this strip EXIF metadata?</summary>
+          <p>Yes. Processing through the Canvas API automatically removes all EXIF data. The output PNG contains only pixel data.</p>
+        </details>
+      </div>
+    </div>
+
+    <!-- RIGHT col -->
+    <div class="side">
+      <!-- How it works -->
+      <div class="card">
+        <div class="card-hd"><div class="lbl"><i data-lucide="cpu"></i>How it works</div></div>
+        <ul class="how-list">
+          <li class="how-item">
+            <div class="how-n">01</div>
+            <div class="how-t"><h4>Client-side only</h4><p>Images never leave your device — all processing happens in the browser</p></div>
+          </li>
+          <li class="how-item">
+            <div class="how-n">02</div>
+            <div class="how-t"><h4>Reverse alpha blend</h4><p>Mathematically recovers original pixels using pre-captured alpha maps</p></div>
+          </li>
+          <li class="how-item">
+            <div class="how-n">03</div>
+            <div class="how-t"><h4>Auto-detect size</h4><p>Detects 48×48 or 96×96 watermark based on image dimensions</p></div>
+          </li>
+          <li class="how-item">
+            <div class="how-n">04</div>
+            <div class="how-t"><h4>Lossless PNG output</h4><p>Saves as PNG to avoid any additional compression artifacts</p></div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- About -->
+      <div class="card" id="about">
+        <div class="card-hd"><div class="lbl"><i data-lucide="info"></i>About</div></div>
+        <div class="about-body">
+          <p>A free, open-source tool that removes the visible star-shaped watermark Google Gemini adds to AI-generated images. Unlike AI inpainting tools, this mathematically reverses the exact blending operation — pixel-perfect, zero quality loss.</p>
+          <p>Based on work by <a href="https://github.com/GargantuaX/gemini-watermark-remover" target="_blank" rel="noopener">GargantuaX</a> &amp; <a href="https://github.com/allenk/GeminiWatermarkTool" target="_blank" rel="noopener">allenk</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fl">
+    <a href="https://github.com/devmelife" target="_blank" rel="noopener">devmelife</a>
+    <span class="sep">·</span>
+    <span>based on</span>
+    <a href="https://github.com/GargantuaX/gemini-watermark-remover" target="_blank" rel="noopener">GargantuaX</a>
+    <span class="sep">&amp;</span>
+    <a href="https://github.com/allenk/GeminiWatermarkTool" target="_blank" rel="noopener">allenk</a>
+  </div>
+  <div class="fr">
+    built by <a href="https://github.com/devmelife" target="_blank" rel="noopener"><i data-lucide="github"></i>devmelife</a>
+  </div>
+</footer>
+
+<canvas id="processingCanvas"></canvas>
+
+<script>
+  const ALPHA_NOISE_FLOOR=3/255,ALPHA_THRESHOLD=.002,MAX_ALPHA=.99,LOGO_VALUE=255;
+  let alphaMap48=null,alphaMap96=null;
+
+  async function loadAlphaMap(url,size){
+    return new Promise((res,rej)=>{
+      const img=new Image();img.crossOrigin='anonymous';
+      img.onload=()=>{
+        const c=document.createElement('canvas');c.width=size;c.height=size;
+        const ctx=c.getContext('2d');ctx.drawImage(img,0,0,size,size);
+        const d=ctx.getImageData(0,0,size,size).data;
+        const m=new Float32Array(size*size);
+        for(let i=0;i<m.length;i++){const x=i*4;m[i]=Math.max(d[x],d[x+1],d[x+2])/255;}
+        res(m);
+      };img.onerror=rej;img.src=url;
+    });
+  }
+
+  async function ensureAlphaMaps(){
+    if(!alphaMap48)alphaMap48=await loadAlphaMap('assets/bg_48.png',48);
+    if(!alphaMap96)alphaMap96=await loadAlphaMap('assets/bg_96.png',96);
+  }
+
+  function removeWatermark(imageData){
+    const{width,height,data}=imageData;
+    const big=width>1024&&height>1024;
+    const sz=big?96:48,mg=big?64:32,am=big?alphaMap96:alphaMap48;
+    const wx=width-mg-sz,wy=height-mg-sz;
+    const out=new Uint8ClampedArray(data);
+    for(let r=0;r<sz;r++){
+      for(let c=0;c<sz;c++){
+        const ra=am[r*sz+c];
+        if(Math.max(0,ra-ALPHA_NOISE_FLOOR)<ALPHA_THRESHOLD)continue;
+        const a=Math.min(ra,MAX_ALPHA),oma=1-a;
+        const idx=((wy+r)*width+(wx+c))*4;
+        for(let ch=0;ch<3;ch++)out[idx+ch]=Math.max(0,Math.min(255,Math.round((data[idx+ch]-a*LOGO_VALUE)/oma)));
+      }
+    }
+    return new ImageData(out,width,height);
+  }
+
+  function loadImg(file){
+    return new Promise((res,rej)=>{
+      const url=URL.createObjectURL(file);
+      const img=new Image();
+      img.onload=()=>{URL.revokeObjectURL(url);res(img);};
+      img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('load failed'));};
+      img.src=url;
+    });
+  }
+
+  async function processFile(file){
+    await ensureAlphaMaps();
+    const img=await loadImg(file);
+    const cv=document.getElementById('processingCanvas');
+    const ctx=cv.getContext('2d');
+    cv.width=img.width;cv.height=img.height;
+    ctx.drawImage(img,0,0);
+    ctx.putImageData(removeWatermark(ctx.getImageData(0,0,img.width,img.height)),0,0);
+    const bc=document.createElement('canvas');bc.width=img.width;bc.height=img.height;bc.getContext('2d').drawImage(img,0,0);
+    return{beforeUrl:bc.toDataURL('image/png'),afterUrl:cv.toDataURL('image/png'),filename:file.name.replace(/\.[^.]+$/,'')+'.clean.png'};
+  }
+
+  function fmtSize(b){return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';}
+  function dlUrl(url,name){const a=document.createElement('a');a.href=url;a.download=name;a.click();}
+
+  const dz=document.getElementById('dropzone');
+  const fi=document.getElementById('fileInput');
+  const proc=document.getElementById('processor');
+  const sdot=document.getElementById('statusDot');
+  const stxt=document.getElementById('statusText');
+  const blist=document.getElementById('batchList');
+  const result=document.getElementById('result');
+  const bImg=document.getElementById('beforeImg');
+  const aImg=document.getElementById('afterImg');
+  const acts=document.getElementById('actions');
+  const comp=document.getElementById('comp');
+  const aw=document.getElementById('afterWrap');
+  const sl=document.getElementById('sliderLine');
+  const sh=document.getElementById('sliderHandle');
+
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('dragover');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('dragover'));
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('dragover');go(e.dataTransfer.files);});
+  fi.addEventListener('change',e=>go(e.target.files));
+
+  async function go(fileList){
+    const files=[...fileList].filter(f=>f.type.startsWith('image/'));
+    if(!files.length)return;
+    result.classList.remove('active');
+    proc.classList.add('active');
+    blist.innerHTML='';acts.innerHTML='';
+
+    files.forEach((f,i)=>{
+      const li=document.createElement('li');li.className='batch-item';li.id='bi'+i;
+      li.innerHTML=`<div class="bi-dot" style="background:var(--border)"></div><span class="bi-name">${f.name}</span><span class="bi-size">${fmtSize(f.size)}</span>`;
+      blist.appendChild(li);
+    });
+
+    sdot.className='dot run';stxt.className='s-txt';
+    stxt.textContent=`processing ${files.length} image${files.length>1?'s':''}...`;
+
+    const results=[];
+    for(let i=0;i<files.length;i++){
+      const item=document.getElementById('bi'+i);
+      const dot=item.querySelector('.bi-dot');
+      dot.style.background='var(--accent)';dot.style.animation='pulse 1s infinite';
+      stxt.textContent=`processing ${i+1} of ${files.length}...`;
+      try{
+        await new Promise(r=>setTimeout(r,10));
+        const r=await processFile(files[i]);
+        results.push(r);
+        dot.style.background='var(--green)';dot.style.animation='none';
+        const db=document.createElement('button');db.className='bi-dl';db.textContent='save';
+        db.onclick=()=>dlUrl(r.afterUrl,r.filename);item.appendChild(db);
+      }catch(e){dot.style.background='var(--red)';dot.style.animation='none';console.error(e);}
+    }
+
+    if(!results.length){
+      sdot.className='dot err';stxt.className='s-txt err';stxt.textContent='failed to process';return;
+    }
+    sdot.className='dot ok';stxt.className='s-txt ok';
+    stxt.textContent=`done — ${results.length} image${results.length>1?'s':''} cleaned`;
+
+    const last=results[results.length-1];
+    bImg.src=last.beforeUrl;aImg.src=last.afterUrl;
+    result.classList.add('active');
+    aw.style.width='50%';sl.style.left='50%';sh.style.left='50%';
+    result.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+    acts.innerHTML=results.length===1
+      ?`<button class="btn btn-p" id="dlBtn"><i data-lucide="download"></i>Download cleaned image</button><button class="btn btn-g" id="rstBtn">New image</button>`
+      :`<button class="btn btn-p" id="dlAllBtn"><i data-lucide="archive"></i>Download all as ZIP (${results.length} files)</button><button class="btn btn-g" id="rstBtn">New batch</button>`;
+    lucide.createIcons();
+
+    const db=document.getElementById('dlBtn');
+    const dab=document.getElementById('dlAllBtn');
+    const rb=document.getElementById('rstBtn');
+    if(db)db.onclick=()=>dlUrl(last.afterUrl,last.filename);
+    if(dab)dab.onclick=async()=>{
+      dab.disabled=true;
+      dab.innerHTML=`<i data-lucide="loader-2" style="animation:spin .8s linear infinite"></i>Building ZIP...`;
+      lucide.createIcons();
+      try{
+        const zip=new JSZip();
+        const folder=zip.folder('cleaned-images');
+        for(const r of results){
+          const base64=r.afterUrl.split(',')[1];
+          folder.file(r.filename,base64,{base64:true});
+        }
+        const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
+        dlUrl(URL.createObjectURL(blob),'cleaned-images.zip');
+      }catch(e){
+        console.error('ZIP failed',e);
+        alert('ZIP failed — try downloading individually using the save buttons above.');
+      }finally{
+        dab.disabled=false;
+        dab.innerHTML=`<i data-lucide="archive"></i>Download all as ZIP (${results.length} files)`;
+        lucide.createIcons();
+      }
+    };
+    if(rb)rb.onclick=()=>{proc.classList.remove('active');result.classList.remove('active');blist.innerHTML='';acts.innerHTML='';fi.value='';};
+  }
+
+  // main slider
+  let drag=false;
+  function setSlider(x){const r=comp.getBoundingClientRect();const p=Math.max(0,Math.min(100,((x-r.left)/r.width)*100));aw.style.width=p+'%';sl.style.left=p+'%';sh.style.left=p+'%';}
+  comp.addEventListener('pointerdown',e=>{drag=true;comp.setPointerCapture(e.pointerId);setSlider(e.clientX);});
+  comp.addEventListener('pointermove',e=>{if(drag)setSlider(e.clientX);});
+  comp.addEventListener('pointerup',()=>drag=false);
+
+  // demo slider
+  const dc=document.getElementById('demoComp');
+  const daw=document.getElementById('demoAfterWrap');
+  const dsl=document.getElementById('demoSliderLine');
+  const dsh=document.getElementById('demoSliderHandle');
+  let ddrag=false;
+
+  function syncDemo(){const img=dc.querySelector('.aw img');if(img)img.style.width=dc.offsetWidth+'px';}
+  window.addEventListener('resize',syncDemo);
+  const dbi=dc.querySelector('img:not(.aw img)');
+  if(dbi)dbi.addEventListener('load',syncDemo);
+  syncDemo();
+
+  function setDemoSlider(x){const r=dc.getBoundingClientRect();const p=Math.max(0,Math.min(100,((x-r.left)/r.width)*100));daw.style.width=p+'%';dsl.style.left=p+'%';dsh.style.left=p+'%';}
+  dc.addEventListener('pointerdown',e=>{ddrag=true;dc.setPointerCapture(e.pointerId);setDemoSlider(e.clientX);});
+  dc.addEventListener('pointermove',e=>{if(ddrag)setDemoSlider(e.clientX);});
+  dc.addEventListener('pointerup',()=>ddrag=false);
+
+  // theme
+  const tt=document.getElementById('themeToggle');
+  const ts=localStorage.getItem('theme');
+  if(ts&&ts!=='system')document.documentElement.setAttribute('data-theme',ts);
+  function syncTheme(t){tt.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.theme===t));}
+  if(ts)syncTheme(ts);
+  tt.addEventListener('click',e=>{
+    const btn=e.target.closest('button');if(!btn)return;
+    const t=btn.dataset.theme;
+    if(t==='system'){document.documentElement.removeAttribute('data-theme');localStorage.removeItem('theme');}
+    else{document.documentElement.setAttribute('data-theme',t);localStorage.setItem('theme',t);}
+    syncTheme(t);
+  });
+
+  // icons
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',()=>lucide.createIcons());}
+  else{lucide.createIcons();}
+</script>
+</body>
+</html>
