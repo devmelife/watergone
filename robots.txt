@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://your-project-name.vercel.app/sitemap.xml
+Sitemap: https://watergone-a9xajgzny-devmelife-projects.vercel.app/sitemap.xml
