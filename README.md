@@ -54,10 +54,8 @@ watergone/
 ├── assets/
 │   ├── bg_48.png           ← Alpha map for 48×48 watermark (standard images)
 │   ├── bg_96.png           ← Alpha map for 96×96 watermark (large images >1024px)
-│   ├── before.jpg          ← Demo image with watermark (for slider example)
-│   ├── after.jpg           ← Demo image cleaned (for slider example)
-│   ├── detail-before.jpg   ← Zoomed watermark detail (used in original, removed in redesign)
-│   ├── detail-after.jpg    ← Zoomed clean detail (used in original, removed in redesign)
+│   ├── before.png          ← Demo image with watermark (for slider example)
+│   ├── after.png           ← Demo image cleaned (for slider example)
 │   └── seo-image.jpg       ← Open Graph image for social sharing previews
 │
 ├── .gitignore              ← Ignores OS files (.DS_Store, Thumbs.db)
@@ -109,15 +107,14 @@ npx serve .
 
 Upload all files keeping the same structure:
 ```
-index.html          → root
-assets/bg_48.png    → assets folder
-assets/bg_96.png    → assets folder
-assets/before.jpg   → assets folder
-assets/after.jpg    → assets folder
-assets/og.jpg       → assets folder
-robots.txt          → root
-sitemap.xml         → root
-.gitignore          → root
+index.html               → root
+assets/bg_48.png         → assets folder
+assets/bg_96.png         → assets folder
+assets/before.png        → assets folder
+assets/after.png         → assets folder
+assets/seo-image.jpg     → assets folder
+README.md                → root
+.gitignore               → root
 ```
 
 ### Step 3 — Enable GitHub Pages
